@@ -12,22 +12,18 @@ const client = Object.assign(
 
 const deploymentData = [];
 
-const foldersPath = path.join(__dirname, 'commands');
-const commandFolders = fs.readdirSync(foldersPath);
+const commandsPath = path.join(__dirname, 'commands');
 const rest = new REST({ version: "10" }).setToken(config.DISCORD_TOKEN);
 
-for (const folder of commandFolders) {
-  const commandsPath = path.join(foldersPath, folder);
-  const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.ts'));
-  for (const file of commandFiles) {
-    const filePath = path.join(commandsPath, file);
-    const command = require(filePath);
-    if ('data' in command && 'execute' in command) {
-      client.commands.set(command.data.name, command);
-      deploymentData.push(command.data.toJSON());
-    } else {
-      console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
-    }
+const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.ts'));
+for (const file of commandFiles) {
+  const filePath = path.join(commandsPath, file);
+  const command = require(filePath);
+  if ('data' in command && 'execute' in command) {
+    client.commands.set(command.data.name, command);
+    deploymentData.push(command.data.toJSON());
+  } else {
+    console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
   }
 }
 
@@ -37,7 +33,7 @@ client.once(Events.ClientReady, c => {
 
 client.once(Events.GuildCreate, async (guild) => {
   try {
-    console.log("refreshing app commands and shi");
+    console.log("Registering app commands...");
 
     await rest.put(
       Routes.applicationGuildCommands(config.DISCORD_CLIENT_ID, guild.id), {
