@@ -1,0 +1,2 @@
+# chickenwolf
+A discord bot.
