@@ -1,13 +1,13 @@
 enum GroupProperties {
   CanVote = 1,
   CanKill,
-  CanSheild,
+  CanSheild
 }
 
-class Group {
+export class Group {
   private game_id: number;
   private players: Player[];
-  private properties: string[];
+  private properties: number[];
 
   public constructor(game_id: number) {
     this.game_id = game_id;
@@ -19,12 +19,24 @@ class Group {
     return this.game_id;
   }
 
+  public getProperties(): number[] {
+    return this.properties;
+  }
+
+  public addProperties(property: number) {
+    this.properties.push(property);
+  }
+
+  public getPlayers(): Player[] {
+    return this.players;
+  }
+
 }
 
 /*
  *  Basic player class
  */
-class Player {
+export class Player {
   private game_id: number; // id of the game player belongs to
   private user_id: number; 
   private groups: Group[];
