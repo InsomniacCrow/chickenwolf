@@ -1,6 +1,6 @@
 import { User } from "discord.js";
 import * as crypto from "node:crypto";
-import { Player } from "./player";
+import { Player, Group } from "./player";
 
 export enum GameState {
   Pregame,
@@ -32,13 +32,15 @@ export class Game {
   public gameID: string;
   private currentState: GameState = GameState.Pregame;
   private adminPlayer: User[] = [];
+  private groups: Map<Group, number>;
+  private numPlayers: number = 0;
 
   constructor(adminPlayer: User) {
     this.gameID = crypto.randomBytes(6).toString("hex");
     this.adminPlayer.push(adminPlayer);
   }
 
-  userList(): User[] {
+  public userList(): User[] {
     var users: User[] = [];
     this.playerList.forEach((player) => {
       users.push(player.getUserId());
@@ -46,7 +48,7 @@ export class Game {
     return users;
   }
 
-  addPlayer(player: User) {
+  public addPlayer(player: User) {
     if (!this.userList().includes(player)) {
       var newPlayer = new Player(this.gameID, player)
       this.playerList.push(newPlayer);
@@ -54,11 +56,30 @@ export class Game {
     }
     throw new Error("Player already in list");
   }
-  removePlayer(player: User) {
+  public removePlayer(player: User) {
     if (this.userList().includes(player)) {
       this.playerList = this.playerList.filter((item) => { return item.getUserId() != player });
       return;
     }
     throw new Error("Player not in list");
+  }
+  public getPlayerList(): Player[] {
+    return this.playerList;
+  }
+  public userToPlayer(user: User): Player {
+    var player: (Player | null) = null;
+    this.playerList.forEach((indiv) => {
+      if (indiv.getUserId() == user) {
+        player = indiv;
+      }
+    });
+    if (player) {
+      return player;
+    }
+    throw new Error("User not found as player");
+  }
+
+  public initialiseGroups(partitions: Map<Group, number>) {
+    this.groups = partitions;
   }
 }

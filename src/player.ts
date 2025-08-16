@@ -42,6 +42,7 @@ export class Player {
   private game_id: string; // id of the game player belongs to
   private user_id: User;
   private groups: Group[];
+  private isAlive: boolean = true;
 
   public constructor(game_id: string, user_id: User) {
     this.game_id = game_id
@@ -66,6 +67,10 @@ export class Player {
   }
 
   public getPlayerDisplayName(): string {
-    return this.user_id.globalName as string ?? "Nameless";
+    return this.user_id.displayName as string ?? "Nameless";
+  }
+
+  public setAlive(cond: boolean) {
+    this.isAlive = cond;
   }
 }
