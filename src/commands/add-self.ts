@@ -8,14 +8,14 @@ export const data = new SlashCommandBuilder()
     option.setName("gameid").setDescription("ID of the game to add yourself to")
   );
 
-export async function execute(interaction, state: GameManagement) {
+export async function execute(interaction: CommandInteraction, state: GameManagement) {
   const gameID = interaction.options.getString("gameid") ?? state.activeGame?.gameID;
   const game = state.getGameFromID(gameID);
   if (game === null) {
     return interaction.reply(constants.noActiveGame);
   }
   try {
-    game.addPlayer(interaction.user);
+    game.addUser(interaction.user);
     await interaction.reply(`Added ${interaction.user}`);
   } catch (error) {
     return interaction.reply("Player already in list");

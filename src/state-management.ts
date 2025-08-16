@@ -19,7 +19,8 @@ export enum GameState {
 export class GameManagement {
   games: Game[] = [];
   activeGame: Game | null = null;
-  gameControllers: Map<Channel, Controller>;
+  gameControllers: Map<string, Controller> = new  Map();  // maps channel id to controller
+  channels: Map<string, Channel> = new Map(); // map channel id to channels
 
   constructor() {
   }
@@ -50,6 +51,10 @@ export class GameManagement {
       throw new Error("Game ID not found");
     }
     return filteredGames[0];
+  }
+
+  getControllerFromChannelId(channelId: string): Controller {
+    return this.gameControllers[this.channels[channelId]]; 
   }
 }
 
@@ -83,6 +88,13 @@ export class Game {
     throw new Error("User already in list");
   }
 
+  public removeUser(user: User) {
+    if (this.userList.includes(user)){
+      this.userList = this.userList.filter((item) => {return item != user})
+    }
+    throw new Error("User not in list");
+  }
+
 
   public addPlayer(player: User) {
     if (!this.userList.includes(player)) {
@@ -94,10 +106,12 @@ export class Game {
   }
 
   public removePlayer(player: User) {
+    console.log(player);
     if (this.userList.includes(player)) {
       this.playerList = this.playerList.filter((item) => { return item.getUserId() != player });
       return;
     }
+    console.log(this.userList);
     throw new Error("Player not in list");
   }
   public getPlayerList(): Player[] {
