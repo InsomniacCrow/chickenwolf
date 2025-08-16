@@ -3,7 +3,7 @@ import * as crypto from "node:crypto";
 
 import { Player, Group } from "./player";
 import { Controller } from "./controller";
-import { helper } from "./newchannel";
+import { makeNewChannel() } from "./newchannel";
 
 export enum GameState {
   Pregame,
@@ -30,7 +30,7 @@ export class GameManagement {
     this.activeGame = game;
     this.games.push(game);
     interaction.channel.send(`Created new game ${game.gameID}`);
-    var channel = await helper(interaction.channel, interaction.guild);
+    var channel = await makeNewChannel(interaction.channel, interaction.guild, `Werebot: ${game.gameID}`);
     try {
       let controller = new Controller(adminPlayer, channel, game);
       this.gameControllers[channel] = controller;

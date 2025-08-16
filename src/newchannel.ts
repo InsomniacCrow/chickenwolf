@@ -1,5 +1,4 @@
-import { CommandInteraction, SlashCommandBuilder, ChannelType, User, RoleResolvable, OverwriteData, PermissionsBitField, PermissionOverwrites, UserResolvable, TextChannel, Guild } from "discord.js";
-import { channel } from "node:diagnostics_channel";
+import { CommandInteraction, SlashCommandBuilder, ChannelType, User, RoleResolvable, OverwriteData, PermissionsBitField, PermissionOverwrites, UserResolvable, TextChannel, Guild, Channel } from "discord.js";
 
 function makeOverwrites(guildId: RoleResolvable, userList: Array<UserResolvable>): Array<OverwriteData> {
 
@@ -20,15 +19,15 @@ function makeOverwrites(guildId: RoleResolvable, userList: Array<UserResolvable>
   return overwrites;
 }
 
-export async function helper(fromChannel, guild: Guild) {
+export async function makeNewChannel(fromChannel, guild: Guild, channel_name: string = "new") {
   await fromChannel.send("Fetched all input and working on your request!");
-  var channel;
+  var channel: Channel;
   try {
     if (guild) {
       const userList = [];
 
       channel = await guild.channels.create({
-        name: "new", // The name given to the Channel
+        name: channel_name, // The name given to the Channel
         type: ChannelType.GuildText, // The type of the Channel created.
         // Since "text" is the default Channel created, this could be ommitted
         permissionOverwrites: makeOverwrites(guild.id, userList),

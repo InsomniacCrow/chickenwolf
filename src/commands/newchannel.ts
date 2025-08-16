@@ -1,6 +1,6 @@
 import { CommandInteraction, SlashCommandBuilder, Guild } from "discord.js";
 
-import { helper } from "../newchannel";
+import { makeNewChannel } from "../newchannel";
 
 export const data = new SlashCommandBuilder()
   .setName("newchannel")
@@ -8,6 +8,6 @@ export const data = new SlashCommandBuilder()
 
 
 export async function execute(interaction: CommandInteraction) {
-  return await helper(interaction, interaction.guild as Guild);
+  return await makeNewChannel(interaction, interaction.guild as Guild);
   //await interaction.reply("Fetched all input and working on your request!");
 }
