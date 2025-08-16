@@ -17,6 +17,7 @@ export async function execute(interaction: CommandInteraction, state: GameManage
     game.removeUser(interaction.user);
     await interaction.reply(`Removed ${interaction.user}`);
   } catch (error) {
+    console.log(error)
     return interaction.reply("Command failed");
   }
 }

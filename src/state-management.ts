@@ -25,19 +25,19 @@ export class GameManagement {
   constructor() {
   }
 
-  public async newGame(adminPlayer: User, interaction) {
+  public async newGame(adminUser: User, interaction) {
     // Creates a new controller and game.
-    var game = new Game(adminPlayer);
+    var game = new Game(adminUser);
     this.activeGame = game;
     this.games.push(game);
     interaction.channel.send(`Created new game ${game.gameID}`);
     const newChannelName = `Werebot: ${game.gameID}`;
     var channel = await makeNewChannel(interaction.channel, interaction.guild, newChannelName);
     try {
-      let controller = new Controller(adminPlayer, channel as TextChannel, game);
+      let controller = new Controller(adminUser, channel as TextChannel, game);
       this.gameControllers[channel.id] = controller;
-      // by default adds the adminPlayer to the game
-      controller.addUser(adminPlayer);
+      // by default adds the adminUser to the game
+      controller.addUser(adminUser);
     } catch (error) {
       console.log(error);
     }
@@ -63,13 +63,13 @@ export class Game {
   private userList: User[] = [];
   public gameID: string;
   private currentState: GameState = GameState.Pregame;
-  private adminPlayer: User[] = [];
+  private adminUser: User[] = [];
   private groups: Map<Group, number>;
   private numPlayers: number = 0;
 
-  constructor(adminPlayer: User) {
+  constructor(adminUser: User) {
     this.gameID = crypto.randomBytes(6).toString("hex");
-    this.adminPlayer.push(adminPlayer);
+    this.adminUser.push(adminUser);
   }
 
   public getUserListFromPlayers(): User[] {
@@ -78,6 +78,10 @@ export class Game {
       users.push(player.getUserId());
     });
     return users;
+  }
+  
+  public getUserList(): User[] {
+    return this.userList;
   }
 
   public getUserList(): User[] {
@@ -93,11 +97,11 @@ export class Game {
   }
 
   public removeUser(user: User) {
-    if (this.userList.includes(user)) {
-      this.userList = this.userList.filter((item) => { return item != user })
-      return;
+    if (this.userList.includes(user)){
+      this.userList = this.userList.filter((item) => {return item != user})
+    } else {
+      throw new Error("User not in list");
     }
-    throw new Error("User not in list");
   }
 
 
@@ -111,12 +115,10 @@ export class Game {
   }
 
   public removePlayer(player: User) {
-    console.log(player);
     if (this.userList.includes(player)) {
       this.playerList = this.playerList.filter((item) => { return item.getUserId() != player });
       return;
     }
-    console.log(this.userList);
     throw new Error("Player not in list");
   }
   public getPlayerList(): Player[] {
