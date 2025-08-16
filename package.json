@@ -1,15 +1,25 @@
 {
-  "name": "tester",
+  "name": "chickenwolf",
   "version": "1.0.0",
   "description": "testing bot",
+  "homepage": "https://github.com/InsomniacCrow/chickenwolf#readme",
+  "bugs": {
+    "url": "https://github.com/InsomniacCrow/chickenwolf/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/InsomniacCrow/chickenwolf.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
   "main": "index.ts",
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "start": "node dist/index.ts",
-    "build": "tsup src/index.ts --minify"
+    "build": "tsup src/index.ts --minify",
+    "register": "tsx watch src/deploy-commands.ts"
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "discord.js": "^14.21.0",
     "dotenv": "^17.2.1"
@@ -18,7 +28,7 @@
     "tsup": "^8.5.0",
     "tsx": "^4.20.4",
     "typescript": "^5.9.2"
-  }, 
+  },
   "compilerOptions": {
     "target": "ES2020",
     "module": "commonjs",

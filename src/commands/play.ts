@@ -5,5 +5,5 @@ export const data = new SlashCommandBuilder()
   .setDescription("Replies with stuff! Woah");
 
 export async function execute(interaction: CommandInteraction) {
-  return interaction.reply("If only Amy gave us admin privileges ;_;");
+  return interaction.reply("yayayayayay");
 }
