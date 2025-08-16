@@ -1,10 +1,4 @@
-import { CommandInteraction, SlashCommandBuilder, ChannelType, User, RoleResolvable, OverwriteData, PermissionsBitField, PermissionOverwrites, UserResolvable, TextChannel, Guild } from "discord.js";
-import { channel } from "node:diagnostics_channel";
-
-export const data = new SlashCommandBuilder()
-  .setName("newchannel")
-  .setDescription("Ts command creates a text channel");
-
+import { CommandInteraction, SlashCommandBuilder, ChannelType, User, RoleResolvable, OverwriteData, PermissionsBitField, PermissionOverwrites, UserResolvable, TextChannel, Guild, Channel } from "discord.js";
 
 function makeOverwrites(guildId: RoleResolvable, userList: Array<UserResolvable>): Array<OverwriteData> {
 
@@ -25,22 +19,23 @@ function makeOverwrites(guildId: RoleResolvable, userList: Array<UserResolvable>
   return overwrites;
 }
 
-export async function helper(fromChannel, guild: Guild) {
+export async function makeNewChannel(fromChannel: TextChannel, guild: Guild, channel_name: string = "new"): Promise<Channel> {
   await fromChannel.send("Fetched all input and working on your request!");
-  var channel;
+  var channel: Channel;
   try {
     if (guild) {
-      const userList = [await guild.members.fetch("490790539042619393")];
+      const userList = [];
 
       channel = await guild.channels.create({
-        name: "new", // The name given to the Channel
+        name: channel_name, // The name given to the Channel
         type: ChannelType.GuildText, // The type of the Channel created.
         // Since "text" is the default Channel created, this could be ommitted
         permissionOverwrites: makeOverwrites(guild.id, userList),
       });
-      
+
     } else {
       console.error("Applicable Guild D.N.E...");
+      throw new Error("Cannot create channel");
     }
     // Now create the Channel in the server.
     // Notice how we are creating a Channel in the list of Channels
@@ -50,6 +45,7 @@ export async function helper(fromChannel, guild: Guild) {
     // If we managed to create the Channel, edit the initial response with
     // a success message
     await fromChannel.send("Your channel was successfully created!");
+    return channel;
   } catch (error) {
     // If an error occurred and we were not able to create the Channel
     // the bot is most likely received the "Missing Permissions" error.
@@ -61,6 +57,6 @@ export async function helper(fromChannel, guild: Guild) {
       content:
         "Your channel could not be created! Please check if the bot has the necessary permissions!",
     });
+    throw new Error("Cannot create channel");
   }
-  return channel;
 }
