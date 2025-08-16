@@ -58,7 +58,7 @@ export class Game {
     }
     throw new Error("Player already in list");
   }
-  
+
   public removePlayer(player: User) {
     if (this.userList().includes(player)) {
       this.playerList = this.playerList.filter((item) => { return item.getUserId() != player });
@@ -84,5 +84,15 @@ export class Game {
 
   public initialiseGroups(partitions: Map<Group, number>) {
     this.groups = partitions;
+  }
+
+  public killPlayer(victim: Player) {
+    if (this.playerList.includes(victim)) {
+      victim = this.playerList.find((player) => { player == victim }) as Player;
+      victim.setAlive(false);
+      // REMOVE LIVING GROUP?
+      return;
+    }
+    throw new Error("Player not in list");
   }
 }
