@@ -3,7 +3,7 @@ import { User } from "discord.js";
 export enum GroupProperties {
   Vote = "vote",
   CanKill = "kill",
-  CanSheild = "shield"
+  CanShield = "shield"
 }
 
 export class Group {
