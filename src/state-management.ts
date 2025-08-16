@@ -1,7 +1,9 @@
-import { User } from "discord.js";
+import { TextChannel, Channel, User } from "discord.js";
 import * as crypto from "node:crypto";
 
 import { Player, Group } from "./player";
+import { Controller } from "./controller";
+import { helper } from "./newchannel";
 
 export enum GameState {
   Pregame,
@@ -17,14 +19,26 @@ export enum GameState {
 export class GameManagement {
   games: Game[] = [];
   activeGame: Game | null = null;
+  gameControllers: Map<Channel, Controller>;
 
   constructor() {
   }
 
-  newGame(adminPlayer: User) {
+  public async newGame(adminPlayer: User, interaction) {
+    // Creates a new controller and game.
     var game = new Game(adminPlayer);
     this.activeGame = game;
     this.games.push(game);
+    interaction.channel.send(`Created new game ${game.gameID}`);
+    var channel = await helper(interaction.channel, interaction.guild);
+    try {
+      let controller = new Controller(adminPlayer, channel, game);
+      this.gameControllers[channel] = controller;
+      // by default adds the adminPlayer to the game
+      controller.addUser(adminPlayer);
+    } catch (error) {
+      console.log(error);
+    }   
   }
 
   getGameFromID(id: string): Game {
