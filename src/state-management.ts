@@ -28,10 +28,10 @@ export class GameManagement {
 }
 
 export class Game {
-  playerList: Player[] = []; // temp will be replaced with amy's player list
-  gameID: string;
-  currentState: GameState = GameState.Pregame;
-  adminPlayer: User[] = [];
+  private playerList: Player[] = [];
+  public gameID: string;
+  private currentState: GameState = GameState.Pregame;
+  private adminPlayer: User[] = [];
 
   constructor(adminPlayer: User) {
     this.gameID = crypto.randomBytes(6).toString("hex");
