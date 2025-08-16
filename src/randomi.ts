@@ -16,7 +16,7 @@ function shuffle(array: Array<any>) {
     }
 }
 
-function randomise(userList: Array<User>, roleNumbers: Map<Group, number>): Array<Player> {
+export function randomise(userList: Array<User>, roleNumbers: Map<Group, number>): Array<Player> {
   /**
    * Assigns roles from list of players.
    * Will also affect players array in Groups class given in roleNumbers.

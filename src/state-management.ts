@@ -17,10 +17,12 @@ export enum GameState {
 }
 
 export class GameManagement {
-  games: Game[] = [];
+  // games: Game[] = [];
   activeGame: Game | null = null;
-  gameControllers: Map<string, Controller> = new Map();  // maps channel id to controller
-  channels: Map<string, Channel> = new Map(); // map channel id to channels
+  // gameControllers: Map<string, Controller> = new Map();  // maps channel id to controller
+  // channels: Map<string, Channel> = new Map(); // map channel id to channels
+  // Maybe just having a list of controller is better...
+  controllers: Controller[] = [];
 
   constructor() {
   }
@@ -29,20 +31,21 @@ export class GameManagement {
     // Creates a new controller and game.
     var game = new Game(adminUser);
     this.activeGame = game;
-    this.games.push(game);
+    // this.games.push(game);
     interaction.channel.send(`Created new game ${game.gameID}`);
     const newChannelName = `Werebot: ${game.gameID}`;
     var channel = await makeNewChannel(interaction.channel, interaction.guild, newChannelName);
     try {
       let controller = new Controller(adminUser, channel as TextChannel, game);
-      this.gameControllers[channel.id] = controller;
       // by default adds the adminUser to the game
       controller.addUser(adminUser);
+      this.controllers.push(controller)
     } catch (error) {
       console.log(error);
     }
+    console.log(this);
   }
-
+  /*
   getGameFromID(id: string): Game {
     var filteredGames: Game[] = this.games.filter((g) => {
       return g.gameID == id;
@@ -52,9 +55,26 @@ export class GameManagement {
     }
     return filteredGames[0];
   }
+  */
 
-  getControllerFromChannelId(channelId: string): Controller {
-    return this.gameControllers[this.channels[channelId]];
+  getControllerFromId(game_id: string): Controller {
+    var filteredControllers: Controller[] = this.controllers.filter((c) => {
+      return c.getGameId() == game_id;
+    })
+    if (filteredControllers.length != 1) {
+      throw new Error("Game ID not found");
+    }
+    return filteredControllers[0];
+  }
+
+  getControllerFromChannel(channel: Channel): Controller {
+    var filteredControllers: Controller[] = this.controllers.filter((c) => {
+      return c.getChannel() == channel;
+    })
+    if (filteredControllers.length != 1) {
+      throw new Error("Channel not found");
+    }
+    return filteredControllers[0];
   }
 }
 
@@ -80,10 +100,6 @@ export class Game {
     return users;
   }
   
-  public getUserList(): User[] {
-    return this.userList;
-  }
-
   public getUserList(): User[] {
     return this.userList;
   }

@@ -10,13 +10,18 @@ export const data = new SlashCommandBuilder()
 
 export async function execute(interaction: CommandInteraction, state: GameManagement) {
   const gameID = interaction.options.getString("gameid") ?? state.activeGame?.gameID;
-  const game = state.getGameFromID(gameID);
-  if (game === null) {
+  var controller;
+  try {
+    controller = state.getControllerFromId(gameID);
+  } catch (error) {
+    return interaction.reply("Game does not exist or hasn't finish creating, maybe try again in a few seconds?");
+  }
+  if (controller === null) {
     return interaction.reply(constants.noActiveGame);
   }
   try {
-    game.addUser(interaction.user);
-    await interaction.reply(`Added ${interaction.user}`);
+    await controller.addUser(interaction.user);
+    return interaction.reply(`Added ${interaction.user} to game ${controller.getGameId()}`);
   } catch (error) {
     return interaction.reply("Player already in list");
   }

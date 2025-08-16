@@ -9,15 +9,15 @@ export const data = new SlashCommandBuilder()
 
 export async function execute(interaction: CommandInteraction, state: GameManagement) {
   const gameID = interaction.options.getString("gameid") ?? state.activeGame?.gameID;
-  const game = state.getGameFromID(gameID);
-  if (game === null) {
+  const controller = state.getControllerFromId(gameID);
+  if (controller === null) {
     return interaction.reply(constants.noActiveGame);
   }
   try {
-    game.removeUser(interaction.user);
-    await interaction.reply(`Removed ${interaction.user}`);
+    await controller.removeUser(interaction.user);
+    return interaction.reply(`Removed ${interaction.user}`);
   } catch (error) {
     console.log(error)
-    return interaction.reply("Command failed");
+    return interaction.reply(`${interaction.user} is not in game ${gameID}`);
   }
 }
