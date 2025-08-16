@@ -36,7 +36,7 @@ export class GameManagement {
     const newChannelName = `Werebot: ${game.gameID}`;
     var channel = await makeNewChannel(interaction.channel, interaction.guild, newChannelName);
     try {
-      let controller = new Controller(adminUser, channel as TextChannel, game);
+      let controller = new Controller(adminUser, interaction.guild, channel as TextChannel, game);
       // by default adds the adminUser to the game
       controller.addUser(adminUser);
       this.controllers.push(controller)

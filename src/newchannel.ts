@@ -1,6 +1,6 @@
 import { CommandInteraction, SlashCommandBuilder, ChannelType, User, RoleResolvable, OverwriteData, PermissionsBitField, PermissionOverwrites, UserResolvable, TextChannel, Guild, Channel } from "discord.js";
 
-function makeOverwrites(guildId: RoleResolvable, userList: Array<UserResolvable>): Array<OverwriteData> {
+function makeOverwrites(guildId: RoleResolvable, userList: Array<UserResolvable>, readOnly: boolean = false): Array<OverwriteData> {
 
   const overwrites: Array<OverwriteData> = [
     {
@@ -8,29 +8,42 @@ function makeOverwrites(guildId: RoleResolvable, userList: Array<UserResolvable>
       deny: [PermissionsBitField.Flags.ViewChannel]
     }
   ];
-
-  userList.forEach(userId => {
-    overwrites.push({
-      id: userId,
-      allow: [PermissionsBitField.Flags.ViewChannel]
+  if (readOnly) {
+    userList.forEach(userId => {
+      overwrites.push({
+        id: userId,
+        allow: [PermissionsBitField.Flags.ViewChannel],
+        deny: [PermissionsBitField.Flags.SendMessages]
+      });
+  }); 
+  } else {
+    userList.forEach(userId => {
+     overwrites.push({
+       id: userId,
+       allow: [PermissionsBitField.Flags.ViewChannel]
+      });
     });
-  });
+  }
 
   return overwrites;
 }
 
-export async function makeNewChannel(fromChannel: TextChannel, guild: Guild, channel_name: string = "new"): Promise<Channel> {
+export async function makeNewChannel(
+  fromChannel: TextChannel, 
+  guild: Guild, 
+  channel_name: string = "new", 
+  readOnly: boolean = false,
+  userList: User[] = []
+): Promise<Channel> {
   await fromChannel.send("Fetched all input and working on your request!");
   var channel: Channel;
   try {
     if (guild) {
-      const userList = [];
-
       channel = await guild.channels.create({
         name: channel_name, // The name given to the Channel
         type: ChannelType.GuildText, // The type of the Channel created.
         // Since "text" is the default Channel created, this could be ommitted
-        permissionOverwrites: makeOverwrites(guild.id, userList),
+        permissionOverwrites: makeOverwrites(guild.id, userList, readOnly),
       });
 
     } else {

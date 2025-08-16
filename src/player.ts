@@ -17,7 +17,7 @@ export class Group {
     this.game_id = game_id;
     this.players = [];
     this.properties = new Map<string, boolean | number | string>();
-    this.properties["name"] = name;
+    this.properties.set("name", name);
     this.acts_in_night = acts_in_night;
   }
 

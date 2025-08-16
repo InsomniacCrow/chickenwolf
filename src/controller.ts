@@ -1,7 +1,8 @@
 import { Game, GameState } from "./state-management";
-import { Channel, channelLink, CommandInteraction, TextChannel, User } from "discord.js";
+import { Channel, channelLink, CommandInteraction, Guild, TextChannel, User } from "discord.js";
 import { Group, Player } from "./player";
 import { randomise } from "./randomi";
+import { makeNewChannel } from "./newchannel";
 
 /*
 The Controller
@@ -13,18 +14,20 @@ export class Controller {
   private admin: User;
   private num_players: number;
   private channel: Channel;
+  private guild: Guild;
   private groupChannels: Map<Group, Channel>;
   private players: Player[];
 
   /*
   Constructs a game. By default has 5 players, 1 werewolf and 4 villagers.
   */
-  public constructor(admin: User, channel: Channel, game: Game, num_players: number = 2) {
+  public constructor(admin: User, guild: Guild, channel: Channel, game: Game, num_players: number = 2) {
     this.admin = admin;
     this.game = game; // creates a new game
     this.game_id = game.gameID;
     this.num_players = num_players;
     this.channel = channel;
+    this.guild = guild;
     this.groupChannels = new Map();
     this.ongoing = false; // Is the game running right now?
   }
@@ -78,17 +81,19 @@ export class Controller {
   public async startGame(interaction: CommandInteraction) {
     if (this.ongoing) {
       (this.channel as TextChannel).send("Nuh-uh game had already started you cannot start a game inside a started game, did I said games' started?");
+      return;
     }
     if (interaction.user != this.admin) {
       (this.channel as TextChannel).send("You cannot start the game because you're not the game initialiser.");
       return;
     }
     // prints starting message
-    console.log(this.game.getUserList())
     if (this.game.getUserList().length < this.num_players) {
       (this.channel as TextChannel).send("Cannot start the game: Not enough participants.");
+      return;
     } else if (this.game.getUserList().length > this.num_players){
       (this.channel as TextChannel).send("I don't know how you got here but you gotta kick someone, sorry bug.");
+      return;
     } else {
       (this.channel as TextChannel).send("Game is starting!")
       this.ongoing = true;
@@ -99,10 +104,20 @@ export class Controller {
     randomise(this.game.getUserList(), roleNumbers).forEach(element => {
       this.game.addPlayer(element);
     });
-    console.log(this.game.getPlayerList());
-    console.log(this.game.getPlayerList()[0].getGroups())
+    roleNumbers.forEach(async (_, key) => {
+      if (key.acts_in_night) {
+        let users = key.getPlayers().map(p => p.getUserId())
+        const pings = users.map((user) => {
+          return `<@${user.id}>`
+        });
+        var channel = await makeNewChannel(this.channel as TextChannel, this.guild, `${key.getProperties().get("name")}: ${this.game_id}`, true, users);
+        this.groupChannels.set(key, channel);
+        (channel as TextChannel).send(`Hello ${pings}, you are all ${key.getProperties().get("name")}, here's your rubber room of rats :)`)
+      }
+    });
     
-    
+    // commentted out temporarily so I won't send too many request to discord
+    /*
     while (true){
       this.gameLoop();
       let winner = await this.getWinner();
@@ -111,6 +126,7 @@ export class Controller {
         break;
       }
     }
+    */
 
     //TODO: Tidy up and delete game channel after a short period.
   }
@@ -151,12 +167,12 @@ export class Controller {
   */
   public async nightCycle(): Promise<string> {
     // Cycle through groups that acts at night.
-    return ``; // placeholder
+    return `placeholder night result`; // placeholder
   }
 
   public async dayCycle(): Promise<string> {
 
-    return ``; // placeholder
+    return `placeholder day result`; // placeholder
   }
 
   /*
