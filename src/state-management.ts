@@ -34,9 +34,11 @@ export class GameManagement {
     try {
       let controller = new Controller(adminPlayer, channel, game);
       this.gameControllers[channel] = controller;
+      // by default adds the adminPlayer to the game
+      controller.addUser(adminPlayer);
     } catch (error) {
       console.log(error);
-    }
+    }   
   }
 
   getGameFromID(id: string): Game {
