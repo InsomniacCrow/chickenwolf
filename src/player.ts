@@ -64,4 +64,8 @@ export class Player {
   public getGroups(): Group[] {
     return this.groups;
   }
+
+  public getPlayerDisplayName(): string {
+    return this.user_id.globalName as string ?? "Nameless";
+  }
 }

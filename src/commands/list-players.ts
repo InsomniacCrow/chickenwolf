@@ -11,9 +11,12 @@ export async function execute(interaction: CommandInteraction, state: GameManage
   if (state.activeGame === null) {
     return interaction.reply(constants.noActiveGame);
   }
-  const playerListString = state.activeGame.playerList.forEach((player) => {
-    return `${player.getUserId().displayName}`
+  if (state.activeGame.playerList.length == 0) {
+    return interaction.reply("No players so far, maybe use '/addself'?");
+  }
+  const playerListString = state.activeGame.playerList.map((player) => {
+    return `${player.getPlayerDisplayName()} `
   });
-  console.log(playerListString);
+
   await interaction.reply(`Players: ${playerListString}`);
 }

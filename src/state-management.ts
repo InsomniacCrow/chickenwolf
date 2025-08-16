@@ -16,7 +16,7 @@ export enum GameState {
 }
 
 export class GameManagement {
-  games: Game[];
+  games: Game[] = [];
   activeGame: Game | null = null;
 
   constructor() {
@@ -25,6 +25,7 @@ export class GameManagement {
   newGame(adminPlayer: User) {
     var game = new Game(adminPlayer);
     this.activeGame = game;
+    this.games.push(game);
   }
 }
 
