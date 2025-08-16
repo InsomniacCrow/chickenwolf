@@ -12,7 +12,7 @@ export async function execute(interaction: CommandInteraction, state: GameManage
   }
   try {
     state.activeGame.addPlayer(interaction.user);
-    await interaction.reply(`Added ${interaction.user} Players: ${state.activeGame.playerList}`);
+    await interaction.reply(`Added ${interaction.user}`);
   } catch (error) {
     return interaction.reply("Player already in list");
   }

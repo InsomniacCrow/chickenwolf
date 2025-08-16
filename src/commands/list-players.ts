@@ -11,5 +11,9 @@ export async function execute(interaction: CommandInteraction, state: GameManage
   if (state.activeGame === null) {
     return interaction.reply(constants.noActiveGame);
   }
-  await interaction.reply(`Players: ${state.activeGame.playerList}`);
+  const playerListString = state.activeGame.playerList.forEach((player) => {
+    return `${player.getUserId().displayName}`
+  });
+  console.log(playerListString);
+  await interaction.reply(`Players: ${playerListString}`);
 }
