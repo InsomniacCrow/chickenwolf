@@ -2,9 +2,9 @@ import { CommandInteraction, SlashCommandBuilder } from "discord.js";
 import Keyv from "keyv";
 
 export const data = new SlashCommandBuilder()
-  .setName("play")
-  .setDescription("Replies with stuff!");
+  .setName("help")
+  .setDescription("Tells you how to use it!");
 
 export async function execute(interaction: CommandInteraction, state: (Keyv | null) = null) {
-  await interaction.reply("ashahshah")
+  return interaction.reply("ahsdfkjlhsdf");
 }
