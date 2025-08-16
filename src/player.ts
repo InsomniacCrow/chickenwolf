@@ -1,6 +1,6 @@
 import { User } from "discord.js";
 
-enum GroupProperties {
+export enum GroupProperties {
   Vote = "vote",
   CanKill = "kill",
   CanSheild = "shield"
@@ -10,14 +10,14 @@ export class Group {
   private game_id: string;
   private players: Player[];
   private properties: Map<string, boolean|number|string>;
-  public readonly acts_in_day: boolean;
+  public readonly acts_in_night: boolean;
 
   // By default the group acts in day
-  public constructor(game_id: string, acts_in_day: boolean = true) {
+  public constructor(game_id: string, acts_in_night: boolean = false) {
     this.game_id = game_id;
     this.players = this.players;
     this.properties = new Map<string, boolean|number|string>();
-    this.acts_in_day = acts_in_day;
+    this.acts_in_night = acts_in_night;
   }
 
   public getGameId(): string {
@@ -34,6 +34,11 @@ export class Group {
 
   public getPlayers(): Player[] {
     return this.players;
+  }
+
+  public addPlayer(player: Player) {
+    this.players.push(player);
+    player.addToGroup(this); // links the player
   }
 
 }
