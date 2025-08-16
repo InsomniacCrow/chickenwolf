@@ -41,4 +41,8 @@ export class Controller {
     if (this.game.getPlayerList().length < this.num_players) {
     }
   }
+
+  public getGame(): Game {
+    return this.game;
+  }
 }

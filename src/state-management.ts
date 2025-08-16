@@ -19,7 +19,7 @@ export enum GameState {
 export class GameManagement {
   games: Game[] = [];
   activeGame: Game | null = null;
-  gameControllers: Map<string, Controller> = new  Map();  // maps channel id to controller
+  gameControllers: Map<string, Controller> = new Map();  // maps channel id to controller
   channels: Map<string, Channel> = new Map(); // map channel id to channels
 
   constructor() {
@@ -54,7 +54,7 @@ export class GameManagement {
   }
 
   getControllerFromChannelId(channelId: string): Controller {
-    return this.gameControllers[this.channels[channelId]]; 
+    return this.gameControllers[this.channels[channelId]];
   }
 }
 
@@ -72,6 +72,18 @@ export class Game {
     this.adminUser.push(adminUser);
   }
 
+  public getUserListFromPlayers(): User[] {
+    var users: User[] = [];
+    this.playerList.forEach((player) => {
+      users.push(player.getUserId());
+    });
+    return users;
+  }
+  
+  public getUserList(): User[] {
+    return this.userList;
+  }
+
   public getUserList(): User[] {
     return this.userList;
   }
@@ -85,7 +97,6 @@ export class Game {
   }
 
   public removeUser(user: User) {
-    console.log(this.playerList);
     if (this.userList.includes(user)){
       this.userList = this.userList.filter((item) => {return item != user})
     } else {
