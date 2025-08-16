@@ -6,6 +6,6 @@ export const data = new SlashCommandBuilder()
   .setDescription("Replies with stuff! Woah");
 
 export async function execute(interaction: CommandInteraction, state: GameManagement) {
-  state.newGame(interaction.user);
-  await interaction.reply(`Created new game ${state.activeGame?.gameID}`);
+  state.newGame(interaction.user, interaction);
+  return interaction.reply(`Creating new game...`)
 }

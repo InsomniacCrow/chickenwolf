@@ -9,14 +9,15 @@ export enum GroupProperties {
 export class Group {
   private game_id: string;
   private players: Player[];
-  private properties: Map<string, boolean|number|string>;
+  private properties: Map<string, boolean | number | string>;
   public readonly acts_in_night: boolean;
 
   // By default the group acts in day
-  public constructor(game_id: string, acts_in_night: boolean = false) {
+  public constructor(game_id: string, acts_in_night: boolean = false, name: string) {
     this.game_id = game_id;
     this.players = this.players;
-    this.properties = new Map<string, boolean|number|string>();
+    this.properties = new Map<string, boolean | number | string>();
+    this.properties["name"] = name;
     this.acts_in_night = acts_in_night;
   }
 
@@ -24,11 +25,11 @@ export class Group {
     return this.game_id;
   }
 
-  public getProperties(): Map<string, boolean|number|string> {
+  public getProperties(): Map<string, boolean | number | string> {
     return this.properties;
   }
 
-  public addProperties(property: string, value: boolean|number|string) {
+  public addProperties(property: string, value: boolean | number | string) {
     this.properties.set(property, value);
   }
 
@@ -50,6 +51,7 @@ export class Player {
   private game_id: string; // id of the game player belongs to
   private user_id: User;
   private groups: Group[];
+  private isAlive: boolean = true;
 
   public constructor(game_id: string, user_id: User) {
     this.game_id = game_id
@@ -74,6 +76,14 @@ export class Player {
   }
 
   public getPlayerDisplayName(): string {
-    return this.user_id.globalName as string ?? "Nameless";
+    return this.user_id.displayName as string ?? "Nameless";
+  }
+
+  public setAlive(cond: boolean) {
+    this.isAlive = cond;
+  }
+
+  public getAlive(): boolean {
+    return this.isAlive;
   }
 }

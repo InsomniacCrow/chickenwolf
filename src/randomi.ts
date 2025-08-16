@@ -25,7 +25,7 @@ function randomise(userList: Array<User>, roleNumbers: Map<Group, number>): Arra
    * Will also affect players array in Groups class given in roleNumbers.
    */
   const players: Array<Player> = [];
-  if (!userList || !roleNumbers || userList.length != (roleNumbers.entries().reduce((acc, current) => {acc + current[ROLE_NUM]}, 0))) {
+  if (!userList || !roleNumbers || userList.length != (roleNumbers.entries().reduce((acc: Group, current: number) => {acc + current[ROLE_NUM]}, 0))) {
     console.error("Player Number and Role Number mismatch/D.N.E");
 
   } else {
@@ -36,7 +36,7 @@ function randomise(userList: Array<User>, roleNumbers: Map<Group, number>): Arra
     roleNumbers.forEach((num, roleGroup) => {
       for (let i = 0; i < num; i++) {
         // I checked for undefined above, so I don't know why ? is there
-        const newPlayer = new Player(roleGroup.getGameId(), userList.pop());
+        const newPlayer = new Player(roleGroup.getGameId(), userList.pop() as User);
         newPlayer.addToGroup(roleGroup);
         roleGroup.addPlayer(newPlayer);
         players.push(newPlayer);
