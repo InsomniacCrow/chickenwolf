@@ -7,6 +7,8 @@ import { Group, Player } from "./player"
 
 const ROLE_NUM = 1;
 
+// oops it deleted itself
+// https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
 function shuffle(array: Array<any>) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
