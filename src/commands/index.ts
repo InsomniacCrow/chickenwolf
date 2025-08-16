@@ -1,4 +1,5 @@
 import * as play from "./play";
+import * as newchannel from "./newchannel";
 import * as help from "./help";
 import * as listplayers from "./list-players";
 import * as addself from "./add-self";
@@ -10,4 +11,5 @@ export const commands = {
   listplayers,
   addself,
   removeself,
+  newchannel
 };
