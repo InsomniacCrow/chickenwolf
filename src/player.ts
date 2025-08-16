@@ -1,3 +1,5 @@
+import { User } from "discord.js";
+
 enum GroupProperties {
   Vote = "vote",
   CanKill = "kill",
@@ -18,7 +20,7 @@ export class Group {
     this.acts_in_day = acts_in_day;
   }
 
-  public getGameId(): string{
+  public getGameId(): string {
     return this.game_id;
   }
 
@@ -41,16 +43,16 @@ export class Group {
  */
 export class Player {
   private game_id: string; // id of the game player belongs to
-  private user_id: number; 
+  private user_id: User;
   private groups: Group[];
 
-  public constructor(game_id: string, user_id: number) {
-    this.game_id = game_id;
+  public constructor(game_id: string, user_id: User) {
+    this.game_id = game_id
     this.user_id = user_id;
     this.groups = []; // starts with empty group id.
   }
 
-  public getUserId(): number {
+  public getUserId(): User {
     return this.user_id;
   }
 
@@ -64,5 +66,9 @@ export class Player {
 
   public getGroups(): Group[] {
     return this.groups;
+  }
+
+  public getPlayerDisplayName(): string {
+    return this.user_id.globalName as string ?? "Nameless";
   }
 }
