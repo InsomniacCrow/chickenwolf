@@ -1,5 +1,4 @@
 import { CommandInteraction, SlashCommandBuilder, ChannelType, User, RoleResolvable, OverwriteData, PermissionsBitField, PermissionOverwrites, UserResolvable, TextChannel, Guild } from "discord.js";
-import { channel } from "node:diagnostics_channel";
 
 export const data = new SlashCommandBuilder()
   .setName("newchannel")
