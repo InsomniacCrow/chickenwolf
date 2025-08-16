@@ -1,6 +1,19 @@
 import { User } from "discord.js";
 import * as crypto from "node:crypto";
 
+export enum GameState {
+  Pregame,
+  Startgame,
+  ScenarioStart,
+  Scenario,
+  NightTime,
+  WakeAndDiscuss,
+  Vote,
+  RevealVoteLoser,
+  WinCheck,
+  Endgame,
+}
+
 export class GameManagement {
   games: Game[];
   activeGame: Game | null;
@@ -11,11 +24,11 @@ export class GameManagement {
 }
 
 export class Game {
-  playerList: User[]; // temp will be replaced with amy's player list
+  playerList: User[] = []; // temp will be replaced with amy's player list
   gameID: string;
+  currentState: GameState = GameState.Pregame;
 
   constructor() {
-    this.playerList = [];
     this.gameID = crypto.randomBytes(6).toString("hex");
   }
 
