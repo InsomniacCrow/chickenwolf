@@ -26,10 +26,21 @@ export class GameManagement {
     this.activeGame = game;
     this.games.push(game);
   }
+
+  getGameFromID(id: string): Game {
+    var filteredGames: Game[] = this.games.filter((g) => {
+      return g.gameID == id;
+    })
+    if (filteredGames.length != 1) {
+      throw new Error("Game ID not found");
+    }
+    return filteredGames[0];
+  }
 }
 
 export class Game {
   private playerList: Player[] = [];
+  private userList: User[] = [];
   public gameID: string;
   private currentState: GameState = GameState.Pregame;
   private adminPlayer: User[] = [];
@@ -41,7 +52,7 @@ export class Game {
     this.adminPlayer.push(adminPlayer);
   }
 
-  public userList(): User[] {
+  public getUserList(): User[] {
     var users: User[] = [];
     this.playerList.forEach((player) => {
       users.push(player.getUserId());
@@ -49,9 +60,17 @@ export class Game {
     return users;
   }
 
+  public addUser(user: User) {
+    if (!this.userList.includes(user)) {
+      this.userList.push(user);
+      return;
+    }
+    throw new Error("User already in list");
+  }
+
 
   public addPlayer(player: User) {
-    if (!this.userList().includes(player)) {
+    if (!this.userList.includes(player)) {
       var newPlayer = new Player(this.gameID, player)
       this.playerList.push(newPlayer);
       return;
@@ -60,7 +79,7 @@ export class Game {
   }
 
   public removePlayer(player: User) {
-    if (this.userList().includes(player)) {
+    if (this.userList.includes(player)) {
       this.playerList = this.playerList.filter((item) => { return item.getUserId() != player });
       return;
     }
