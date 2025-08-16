@@ -5,8 +5,6 @@ import { Player } from "./player";
 export enum GameState {
   Pregame,
   Startgame,
-  ScenarioStart,
-  Scenario,
   NightTime,
   WakeAndDiscuss,
   Vote,
