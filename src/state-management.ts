@@ -38,7 +38,7 @@ export class GameManagement {
       controller.addUser(adminPlayer);
     } catch (error) {
       console.log(error);
-    }   
+    }
   }
 
   getGameFromID(id: string): Game {

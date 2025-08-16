@@ -9,7 +9,7 @@ export const data = new SlashCommandBuilder()
   );
 
 export async function execute(interaction, state: GameManagement) {
-  const gameID = interaction.getString("gameid") ?? state.activeGame?.gameID;
+  const gameID = interaction.options.getString("gameid") ?? state.activeGame?.gameID;
   const game = state.getGameFromID(gameID);
   if (game === null) {
     return interaction.reply(constants.noActiveGame);
