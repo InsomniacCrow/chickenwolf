@@ -1,28 +1,42 @@
 import { Game, GameState } from "./state-management";
 import { Channel, channelLink, CommandInteraction, TextChannel, User } from "discord.js";
 import { Group, Player } from "./player";
+import { randomise } from "./randomi";
 
 /*
 The Controller
 */
 export class Controller {
+  private ongoing: boolean;
   private game: Game;
   private game_id: string;
   private admin: User;
   private num_players: number;
   private channel: Channel;
   private groupChannels: Map<Group, Channel>;
+  private players: Player[];
 
   /*
   Constructs a game. By default has 5 players, 1 werewolf and 4 villagers.
   */
-  public constructor(admin: User, channel: Channel, game: Game, num_players: number = 5) {
+  public constructor(admin: User, channel: Channel, game: Game, num_players: number = 2) {
     this.admin = admin;
     this.game = game; // creates a new game
     this.game_id = game.gameID;
     this.num_players = num_players;
     this.channel = channel;
     this.groupChannels = new Map();
+    this.ongoing = false; // Is the game running right now?
+  }
+
+  /*
+  This is hardcoded for now, but in the future we hope to create custom classes etc.
+  */
+  createGroupPartition(): Map<Group, number> {
+    var map = new Map()
+    map.set(new Group(this.game_id, "Villager"), 1);
+    map.set(new Group(this.game_id, "Werewolves", true), 1);
+    return map;
   }
 
   public getGameId(): string {
@@ -52,8 +66,6 @@ export class Controller {
   }
 
   async addUserToChannel(user: User, sendMessage: boolean = true) {
-    console.log("IS this even working...");
-    console.log((this.channel as TextChannel).permissionOverwrites);
     (this.channel as TextChannel).permissionOverwrites
       .edit(user, {SendMessages: sendMessage, ViewChannel: sendMessage})
       .catch(console.error);
@@ -64,18 +76,32 @@ export class Controller {
   While the game has not ended, repeatedly call the game loop.
   */
   public async startGame(interaction: CommandInteraction) {
+    if (this.ongoing) {
+      (this.channel as TextChannel).send("Nuh-uh game had already started you cannot start a game inside a started game, did I said games' started?");
+    }
     if (interaction.user != this.admin) {
       (this.channel as TextChannel).send("You cannot start the game because you're not the game initialiser.");
       return;
     }
     // prints starting message
+    console.log(this.game.getUserList())
     if (this.game.getUserList().length < this.num_players) {
       (this.channel as TextChannel).send("Cannot start the game: Not enough participants.");
     } else if (this.game.getUserList().length > this.num_players){
       (this.channel as TextChannel).send("I don't know how you got here but you gotta kick someone, sorry bug.");
     } else {
       (this.channel as TextChannel).send("Game is starting!")
+      this.ongoing = true;
     }
+
+    // Initialises players and groups.
+    const roleNumbers = this.createGroupPartition();
+    randomise(this.game.getUserList(), roleNumbers).forEach(element => {
+      this.game.addPlayer(element);
+    });
+    console.log(this.game.getPlayerList());
+    console.log(this.game.getPlayerList()[0].getGroups())
+    
     
     while (true){
       this.gameLoop();
@@ -94,7 +120,7 @@ export class Controller {
   */
   async getWinner(){
     // TODO: CHANGE THOS!!!
-    return new Group(this.game_id, false, "gsagfdsafsadfsdafsadfasdflkjsdafhj;adsfjasdklf") 
+    return new Group(this.game_id, "gsagfdsafsadfsdafsadfasdflkjsdafhj;adsfjasdklf") 
   }
 
   /*
@@ -110,18 +136,27 @@ export class Controller {
   IF there is a winning group, returns the winning group. Otherwise, return null.
   */
   public async gameLoop() {
-    var result = await this.nightCycle();
+    var nightResult = await this.nightCycle();
+    (this.channel as TextChannel).send(nightResult);
+    if (this.getWinner() != null) {
+      return;
+    }
+    var dayResult = await this.dayCycle();
+    (this.channel as TextChannel).send(dayResult);
   }
 
   /*
   A night cycle that runs through the action of each group and announces player deaths by the end of the night.
+  Return a string as the annoucement to give at the end of the night.
   */
-  public async nightCycle() {
-
+  public async nightCycle(): Promise<string> {
+    // Cycle through groups that acts at night.
+    return ``; // placeholder
   }
 
-  public async dayCycle() {
+  public async dayCycle(): Promise<string> {
 
+    return ``; // placeholder
   }
 
   /*

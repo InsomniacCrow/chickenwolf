@@ -22,7 +22,8 @@ export function randomise(userList: Array<User>, roleNumbers: Map<Group, number>
    * Will also affect players array in Groups class given in roleNumbers.
    */
   const players: Array<Player> = [];
-  if (!userList || !roleNumbers || userList.length != (roleNumbers.entries().reduce((acc: Group, current: number) => {acc + current[ROLE_NUM]}, 0))) {
+  // if (!userList || !roleNumbers || userList.length != (roleNumbers.entries().reduce((acc: Group, current: number) => {acc + current[ROLE_NUM]}, 0))) {
+  if (!userList || !roleNumbers || userList.length != (roleNumbers.size)) {
     console.error("Player Number and Role Number mismatch/D.N.E");
 
   } else {

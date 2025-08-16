@@ -120,26 +120,26 @@ export class Game {
     }
   }
 
-
-  public addPlayer(player: User) {
-    if (!this.userList.includes(player)) {
-      var newPlayer = new Player(this.gameID, player)
-      this.playerList.push(newPlayer);
+  public addPlayer(player: Player) {
+    if (!this.playerList.includes(player)) {
+      this.playerList.push(player);
       return;
     }
     throw new Error("Player already in list");
   }
 
-  public removePlayer(player: User) {
-    if (this.userList.includes(player)) {
-      this.playerList = this.playerList.filter((item) => { return item.getUserId() != player });
+  public removePlayer(player: Player) {
+    if (this.playerList.includes(player)) {
+      this.playerList = this.playerList.filter((item) => { return item != player });
       return;
     }
     throw new Error("Player not in list");
   }
+
   public getPlayerList(): Player[] {
     return this.playerList;
   }
+
   public userToPlayer(user: User): Player {
     var player: (Player | null) = null;
     this.playerList.forEach((indiv) => {
