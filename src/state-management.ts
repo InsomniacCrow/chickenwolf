@@ -1,5 +1,6 @@
 import { User } from "discord.js";
 import * as crypto from "node:crypto";
+
 import { Player, Group } from "./player";
 
 export enum GameState {
@@ -48,6 +49,7 @@ export class Game {
     return users;
   }
 
+
   public addPlayer(player: User) {
     if (!this.userList().includes(player)) {
       var newPlayer = new Player(this.gameID, player)
@@ -56,6 +58,7 @@ export class Game {
     }
     throw new Error("Player already in list");
   }
+  
   public removePlayer(player: User) {
     if (this.userList().includes(player)) {
       this.playerList = this.playerList.filter((item) => { return item.getUserId() != player });
