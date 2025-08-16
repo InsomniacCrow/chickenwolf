@@ -27,16 +27,19 @@ function makeOverwrites(guildId: RoleResolvable, userList: Array<UserResolvable>
 async function helper(interaction: CommandInteraction) {
   await interaction.reply("Fetched all input and working on your request!");
 
-  const userList = ["youridhere"];
-
   try {
     if (interaction.guild) {
+      const userList = [await interaction.guild.members.fetch("userid")];
+
       await interaction.guild.channels.create({
         name: "new", // The name given to the Channel
         type: ChannelType.GuildText, // The type of the Channel created.
         // Since "text" is the default Channel created, this could be ommitted
         permissionOverwrites: makeOverwrites(interaction.guild.id, userList),
       });
+      
+    } else {
+      console.error("Applicable Guild D.N.E...");
     }
     // Now create the Channel in the server.
     // Notice how we are creating a Channel in the list of Channels
