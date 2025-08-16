@@ -1,9 +1,9 @@
-import { TextChannel, Channel, User } from "discord.js";
+import { TextChannel, Channel, User, CommandInteraction } from "discord.js";
 import * as crypto from "node:crypto";
 
 import { Player, Group } from "./player";
 import { Controller } from "./controller";
-import { makeNewChannel() } from "./newchannel";
+import { makeNewChannel } from "./newchannel";
 
 export enum GameState {
   Pregame,
@@ -30,9 +30,10 @@ export class GameManagement {
     this.activeGame = game;
     this.games.push(game);
     interaction.channel.send(`Created new game ${game.gameID}`);
-    var channel = await makeNewChannel(interaction.channel, interaction.guild, `Werebot: ${game.gameID}`);
+    const newChannelName = `Werebot: ${game.gameID}`;
+    var channel = await makeNewChannel(interaction.channel, interaction.guild, newChannelName);
     try {
-      let controller = new Controller(adminPlayer, channel, game);
+      let controller = new Controller(adminPlayer, channel as TextChannel, game);
       this.gameControllers[channel] = controller;
       // by default adds the adminPlayer to the game
       controller.addUser(adminPlayer);

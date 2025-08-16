@@ -19,7 +19,7 @@ function makeOverwrites(guildId: RoleResolvable, userList: Array<UserResolvable>
   return overwrites;
 }
 
-export async function makeNewChannel(fromChannel, guild: Guild, channel_name: string = "new") {
+export async function makeNewChannel(fromChannel: TextChannel, guild: Guild, channel_name: string = "new"): Promise<Channel> {
   await fromChannel.send("Fetched all input and working on your request!");
   var channel: Channel;
   try {
@@ -35,6 +35,7 @@ export async function makeNewChannel(fromChannel, guild: Guild, channel_name: st
 
     } else {
       console.error("Applicable Guild D.N.E...");
+      throw new Error("Cannot create channel");
     }
     // Now create the Channel in the server.
     // Notice how we are creating a Channel in the list of Channels
@@ -44,6 +45,7 @@ export async function makeNewChannel(fromChannel, guild: Guild, channel_name: st
     // If we managed to create the Channel, edit the initial response with
     // a success message
     await fromChannel.send("Your channel was successfully created!");
+    return channel;
   } catch (error) {
     // If an error occurred and we were not able to create the Channel
     // the bot is most likely received the "Missing Permissions" error.
@@ -55,6 +57,6 @@ export async function makeNewChannel(fromChannel, guild: Guild, channel_name: st
       content:
         "Your channel could not be created! Please check if the bot has the necessary permissions!",
     });
+    throw new Error("Cannot create channel");
   }
-  return channel;
 }
