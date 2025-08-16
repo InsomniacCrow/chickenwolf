@@ -27,4 +27,8 @@ export async function deployCommands({ guildId }: DeployCommandsProps) {
   }
 }
 
+if (require.main == module) {
+  deployCommands({ guildId: `${config.DISCORD_SERVER_GUILD_ID}` });
+}
+
 
