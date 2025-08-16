@@ -2,10 +2,9 @@ import { Client, Events, GatewayIntentBits } from "discord.js";
 import { config } from "./config";
 import { commands } from "./commands";
 import { deployCommands } from "./deploy-commands";
-import { initialise_state } from "./state-initialise";
-import Keyv from "keyv";
+import { GameManagement } from "./state-management";
 
-const state: Keyv = initialise_state();
+const state: GameManagement = new GameManagement();
 
 const client = new Client({
   intents: [
