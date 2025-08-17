@@ -1,4 +1,4 @@
-import { Client, Events, GatewayIntentBits } from "discord.js";
+import { Client, Events, GatewayIntentBits, Partials } from "discord.js";
 import { config } from "./config";
 import { commands } from "./commands";
 import { deployCommands } from "./deploy-commands";
@@ -10,6 +10,10 @@ const client = new Client({
   intents: [
     GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.DirectMessages
   ],
+  partials: [
+    Partials.Channel,
+    Partials.Message
+  ]
 });
 
 client.once(Events.ClientReady, () => {
