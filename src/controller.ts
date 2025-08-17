@@ -5,6 +5,7 @@ import { randomise } from "./randomi";
 import { delay, makeNewChannel, mutePlayers, playerToUsers } from "./newchannel";
 import { werewolf } from "./string-constants";
 import { channel } from "node:diagnostics_channel";
+import { createPlayerSelect, labelThing } from "./vote";
 
 /*
 The Controller
@@ -23,7 +24,7 @@ export class Controller {
   /*
   Constructs a game. By default has 5 players, 1 werewolf and 4 villagers.
   */
-  public constructor(admin: User, guild: Guild, channel: Channel, game: Game, num_players: number = 2) {
+  public constructor(admin: User, guild: Guild, channel: Channel, game: Game, num_players: number = 3) {
     this.admin = admin;
     this.game = game; // creates a new game
     this.game_id = game.gameID;
@@ -39,7 +40,7 @@ export class Controller {
   */
   createGroupPartition(): Map<Group, number> {
     var map = new Map()
-    map.set(new Group(this.game_id, "Villager"), 1);
+    map.set(new Group(this.game_id, "Villager"), 2);
     const werewolves = new Group(this.game_id, "Werewolves", true);
     werewolves.addProperties("action", "kill");
     werewolves.addProperties("vote", true);
@@ -171,7 +172,7 @@ export class Controller {
   public async gameLoop(counter: number) {
     await (this.channel as TextChannel).send(`Night ${counter}. Now everyone shutuup.`)
     await mutePlayers(this.channel, this.game.getPlayerList());
-    var nightResult = await this.nightCycle();
+    var nightResult = await this.nightCycle(counter);
     await (this.channel as TextChannel).send(nightResult);
 
     if (await this.getWinner() != null) {
@@ -183,7 +184,7 @@ export class Controller {
     await delay(this.dayTime - 5000);
     await (this.channel as TextChannel).send("5 seconds left");
     await delay(5000);
-    var dayResult = await this.dayCycle();
+    var dayResult = await this.dayCycle(counter);
     await (this.channel as TextChannel).send(dayResult);
   }
 
@@ -191,7 +192,7 @@ export class Controller {
   A night cycle that runs through the action of each group and announces player deaths by the end of the night.
   Return a string as the annoucement to give at the end of the night.
   */
-  public async nightCycle(): Promise<string> {
+  public async nightCycle(counter: number): Promise<string> {
     var a: [Group, Channel][] = Array.from(this.groupChannels);
     var result: string[] = [];
     await Promise.all(a.map((async (groupNChannel) => {
@@ -209,8 +210,13 @@ export class Controller {
       }
       if (group.getProperties().get("vote") == true) {
         switch (group.getProperties().get("action")) {
-          case "kill":    
-            // get vote result
+          case "kill":
+            const killable = this.game.getPlayerList().filter((p) => !p.getGroups().includes(group)).filter((p) => p.getAlive());
+            function toLabelThing(a: Player) {
+              return {label: a.getPlayerDisplayName(), value: a.getUserId().id}
+            }
+            const inputList: labelThing[] = killable.map((p) => toLabelThing(p)) 
+            await createPlayerSelect(groupChannel, `${counter}`, inputList, "Kill."); // remember TODO Change
             // kill and mute the dead  >:)
             result.push(` ________ was killed last night`);
             break;
@@ -225,7 +231,7 @@ export class Controller {
     return result.toString(); // placeholder
   }
 
-  public async dayCycle(): Promise<string> {
+  public async dayCycle(counter): Promise<string> {
 
     return `fdsaf`; // placeholder
   }

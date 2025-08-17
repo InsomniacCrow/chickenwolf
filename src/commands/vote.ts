@@ -86,11 +86,6 @@ async function createPlayerSelect(interaction, id: string, opts: Array<labelThin
       if (!interaction.isStringSelectMenu() || !interaction.channel) {
         return;
       }
-      let message = await interaction.channel.messages.fetch(interaction.message.id);
-      let value = interaction.values;
-      await message.edit({
-        content: `✅ You selected: ${value}}`,
-      });
       
       if (interaction.customId === id) {
         

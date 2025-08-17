@@ -15,5 +15,7 @@ export const commands = {
   addself,
   removeself,
   newchannel,
-  vote
+  vote, 
+  startgame,
+  cleanupchannels
 };
