@@ -99,7 +99,7 @@ export class Game {
     });
     return users;
   }
-  
+
   public getUserList(): User[] {
     return this.userList;
   }
@@ -113,8 +113,8 @@ export class Game {
   }
 
   public removeUser(user: User) {
-    if (this.userList.includes(user)){
-      this.userList = this.userList.filter((item) => {return item != user})
+    if (this.userList.includes(user)) {
+      this.userList = this.userList.filter((item) => { return item != user })
     } else {
       throw new Error("User not in list");
     }
@@ -165,5 +165,9 @@ export class Game {
       return;
     }
     throw new Error("Player not in list");
+  }
+
+  public getGroupWithNumber(): Map<Group, number> {
+    return this.groups;
   }
 }
