@@ -8,16 +8,23 @@ export const data = new SlashCommandBuilder()
   .setDescription("list all players");
 
 export async function execute(interaction: CommandInteraction, state: GameManagement) {
-  await interaction.reply("Current Games:")
   if (state.controllers.length == 0) {
     return (interaction.channel as TextChannel).send("No active game at the moment.")
     // return interaction.followUp("No players so far, maybe use '/addself'?");
   }
+  await interaction.reply("Current Games:")
   for (let index = 0; index < state.controllers.length; index++) {
     const element = state.controllers[index];
-    const userListString = element.getGame().getUserList().map((user) => {
-      return `${user.displayName}`
+    var userListString: string = "";
+    element.getGame().getUserList().forEach((user: User) => {
+      userListString += `${user.displayName}, `;
+      userListString += '\n';
     });
-    (interaction.channel as TextChannel).send(`Players of game ${element.getGameId()}: ${userListString}`)
+    if (userListString.length == 0) {
+      interaction.followUp(`Game ${element.getGameId()} has no players`);
+      continue;
+    }
+    userListString = userListString.slice(0, -3);
+    interaction.followUp(`Players of game ${element.getGameId()}: ${userListString}`)
   }
 }

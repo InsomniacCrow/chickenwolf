@@ -52,7 +52,7 @@ export class Controller {
 
   public async addUser(user: User) {
     try {
-      this.game.addUser(user); 
+      this.game.addUser(user);
     } catch (error) {
       throw new Error(error.message);
     }
@@ -70,7 +70,7 @@ export class Controller {
 
   async addUserToChannel(user: User, sendMessage: boolean = true) {
     (this.channel as TextChannel).permissionOverwrites
-      .edit(user, {SendMessages: sendMessage, ViewChannel: sendMessage})
+      .edit(user, { SendMessages: sendMessage, ViewChannel: sendMessage })
       .catch(console.error);
   }
 
@@ -91,7 +91,7 @@ export class Controller {
     if (this.game.getUserList().length < this.num_players) {
       (this.channel as TextChannel).send("Cannot start the game: Not enough participants.");
       return;
-    } else if (this.game.getUserList().length > this.num_players){
+    } else if (this.game.getUserList().length > this.num_players) {
       (this.channel as TextChannel).send("I don't know how you got here but you gotta kick someone, sorry bug.");
       return;
     } else {
@@ -115,7 +115,7 @@ export class Controller {
         (channel as TextChannel).send(`Hello ${pings}, you are all ${key.getProperties().get("name")}, here's your rubber room of rats :)`)
       }
     });
-    
+
     // commentted out temporarily so I won't send too many request to discord
     /*
     while (true){
@@ -134,9 +134,9 @@ export class Controller {
   /*
   Gets winner
   */
-  async getWinner(){
+  async getWinner() {
     // TODO: CHANGE THOS!!!
-    return new Group(this.game_id, "gsagfdsafsadfsdafsadfasdflkjsdafhj;adsfjasdklf") 
+    return new Group(this.game_id, "gsagfdsafsadfsdafsadfasdflkjsdafhj;adsfjasdklf")
   }
 
   /*

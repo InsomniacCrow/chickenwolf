@@ -15,12 +15,12 @@ function makeOverwrites(guildId: RoleResolvable, userList: Array<UserResolvable>
         allow: [PermissionsBitField.Flags.ViewChannel],
         deny: [PermissionsBitField.Flags.SendMessages]
       });
-  }); 
+    });
   } else {
     userList.forEach(userId => {
-     overwrites.push({
-       id: userId,
-       allow: [PermissionsBitField.Flags.ViewChannel]
+      overwrites.push({
+        id: userId,
+        allow: [PermissionsBitField.Flags.ViewChannel]
       });
     });
   }
@@ -29,9 +29,9 @@ function makeOverwrites(guildId: RoleResolvable, userList: Array<UserResolvable>
 }
 
 export async function makeNewChannel(
-  fromChannel: TextChannel, 
-  guild: Guild, 
-  channel_name: string = "new", 
+  fromChannel: TextChannel,
+  guild: Guild,
+  channel_name: string = "new",
   readOnly: boolean = false,
   userList: User[] = []
 ): Promise<Channel> {
