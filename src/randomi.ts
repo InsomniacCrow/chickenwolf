@@ -10,6 +10,9 @@ const ROLE_NUM = 1;
 // oops it deleted itself
 // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
 function shuffle(array: Array<any>) {
+  /**
+   * Modifies given array.
+   */
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
@@ -22,8 +25,8 @@ export function randomise(userList: Array<User>, roleNumbers: Map<Group, number>
    * Will also affect players array in Groups class given in roleNumbers.
    */
   const players: Array<Player> = [];
-  // if (!userList || !roleNumbers || userList.length != (roleNumbers.entries().reduce((acc: Group, current: number) => {acc + current[ROLE_NUM]}, 0))) {
-  if (!userList || !roleNumbers || userList.length != (roleNumbers.size)) {
+  if (!userList || !roleNumbers || userList.length != (Array.from(roleNumbers.values()).reduce((acc, current) => acc + current, 0))) {
+  // if (!userList || !roleNumbers || userList.length != (roleNumbers.size)) {
     console.error("Player Number and Role Number mismatch/D.N.E");
 
   } else {

@@ -4,6 +4,7 @@ import * as help from "./help";
 import * as listplayers from "./list-players";
 import * as addself from "./add-self";
 import * as removeself from "./remove-self";
+import * as vote from "./vote";
 import * as startgame from "./start-game";
 import * as cleanupchannels from "./cleanup-channels";
 
@@ -13,7 +14,8 @@ export const commands = {
   listplayers,
   addself,
   removeself,
-  newchannel, // deprecated
+  newchannel,
+  vote, 
   startgame,
-  cleanupchannels,
+  cleanupchannels
 };
