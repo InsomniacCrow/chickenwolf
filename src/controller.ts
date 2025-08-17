@@ -7,6 +7,7 @@ import { werewolf } from "./string-constants";
 import { channel } from "node:diagnostics_channel";
 import { createPlayerSelect, labelThing } from "./vote";
 
+
 /*
 The Controller
 */
@@ -123,16 +124,17 @@ export class Controller {
         await (channel as TextChannel).send(`Hello ${pings}, you are all ${key.getProperties().get("name")}, here's your rubber room of rats :)`);
       }
     });
-    
-    await (this.channel as TextChannel).send(`Gaming is starting in ${this.waitingTime/1000} seconds :3`);
+
+    await (this.channel as TextChannel).send(`Gaming is starting in ${this.waitingTime / 1000} seconds :3`);
     await delay(this.waitingTime); // Make this constants sometime
-    
+
     // commentted out temporarily so I won't send too many request to discord
     (this.channel as TextChannel).send("Game starting.");
     var counter: number = 1;
-    while (true){
+    while (true) {
       await this.gameLoop(counter);
       let winner = await this.getWinner();
+
       if (winner != null){
         await this.announceWinner(winner);
         break;
@@ -145,10 +147,33 @@ export class Controller {
   /*
   Gets winner
   */
-  async getWinner() {
-    // TODO: CHANGE THOS!!!
-    // return new Group(this.game_id, "gsagfdsafsadfsdafsadfasdflkjsdafhj;adsfjasdklf") 
-    return null;
+  async getWinner(): Promise<(Group | null)> {
+    const groups: Group[] = Array.from(this.game.getGroupWithNumber().keys());
+    // werewolves and villagers are mutually exclusive
+    var groupsToAlive: Map<Group, number> = new Map();
+    var oneGroupAllDead: boolean = false;
+    groups.forEach((group: Group) => {
+      var numAlive: number = 0;
+      group.getPlayers().forEach((player: Player) => {
+        if (player.getAlive()) {
+          numAlive++;
+        }
+      });
+      oneGroupAllDead = oneGroupAllDead || (numAlive == 0);
+      groupsToAlive.set(group, numAlive);
+    });
+    if (oneGroupAllDead) {
+      var winners: (Group | null) = null;
+      groupsToAlive.forEach((alive, group) => {
+        if (alive > 0) {
+          winners = group;
+        }
+      });
+      return winners;
+    } else {
+      return null;
+    }
+
   }
 
   /*
@@ -205,7 +230,7 @@ export class Controller {
         });
         await (groupChannel as TextChannel).send(`${pings} you guys can do shit now, talk.`);
         await (delay(this.groupTime));
-        await (groupChannel as TextChannel).send(`now shut up >:(`); 
+        await (groupChannel as TextChannel).send(`now shut up >:(`);
         await mutePlayers(groupChannel, group.getPlayers()); // mutes them.
       }
       if (group.getProperties().get("vote") == true) {
@@ -217,16 +242,17 @@ export class Controller {
             }
             const inputList: labelThing[] = killable.map((p) => toLabelThing(p)) 
             await createPlayerSelect(groupChannel, `${counter}`, inputList, "Kill."); // remember TODO Change
+            // get vote result
             // kill and mute the dead  >:)
             result.push(` ________ was killed last night`);
             break;
-        
+
           default:
             break;
         }
       }
     })))
-   
+
     // Cycle through groups that acts at night.
     return result.toString(); // placeholder
   }
