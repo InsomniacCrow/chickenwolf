@@ -1,4 +1,5 @@
 import { CommandInteraction, SlashCommandBuilder, ChannelType, User, RoleResolvable, OverwriteData, PermissionsBitField, PermissionOverwrites, UserResolvable, TextChannel, Guild, Channel } from "discord.js";
+import { Player } from "./player";
 
 function makeOverwrites(guildId: RoleResolvable, userList: Array<UserResolvable>, readOnly: boolean = false): Array<OverwriteData> {
 
@@ -72,4 +73,33 @@ export async function makeNewChannel(
     });
     throw new Error("Cannot create channel");
   }
+}
+
+export async function muteUsers(channel: Channel, users: User[], unmute: boolean = false) {
+  for (let index = 0; index < users.length; index++) {
+    const user = users[index];
+    (channel as TextChannel).permissionOverwrites.edit(user, {SendMessages: unmute}).catch(console.error);
+  }
+}
+
+/*
+Only alive players will be affected by the mutePlayers function.
+*/
+export async function mutePlayers(channel:Channel, players: Player[], unmute: boolean=false) {
+  muteUsers(channel, playerToUsers(players), unmute);
+}
+
+/*
+filters out living players and returns a list of their user id.
+*/
+export function playerToUsers(players: Player[]): User[] {
+  console.log(players);
+  return players.filter((p) => p.getAlive()).map((p) =>  p.getUserId());
+}
+
+/*
+Taken from https://stackoverflow.com/questions/37764665/how-to-implement-sleep-function-in-typescript
+*/
+export function delay(ms: number) {
+  return new Promise( resolve => setTimeout(resolve, ms) );
 }
