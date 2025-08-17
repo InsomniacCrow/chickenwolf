@@ -24,7 +24,7 @@ export class Controller {
   /*
   Constructs a game. By default has 5 players, 1 werewolf and 4 villagers.
   */
-  public constructor(admin: User, guild: Guild, channel: Channel, game: Game, num_players: number = 3) {
+  public constructor(admin: User, guild: Guild, channel: Channel, game: Game, num_players: number = 4) {
     this.admin = admin;
     this.game = game; // creates a new game
     this.game_id = game.gameID;
@@ -40,7 +40,7 @@ export class Controller {
   */
   createGroupPartition(): Map<Group, number> {
     var map = new Map()
-    map.set(new Group(this.game_id, "Villager"), 2);
+    map.set(new Group(this.game_id, "Villager"), 3);
     const werewolves = new Group(this.game_id, "Werewolves", true);
     werewolves.addProperties("action", "kill");
     werewolves.addProperties("vote", true);
@@ -165,9 +165,9 @@ export class Controller {
   Takes in the current round number
   */
 
-  groupTime = 10000; // 20 seconds to discuss
+  groupTime = 30000; // 20 seconds to discuss
   voteTime  = 10000; // 10 seconds to vote
-  dayTime   = 10000; // 1 minute to discuss in day
+  dayTime   = 60000; // 1 minute to discuss in day
 
   public async gameLoop(counter: number) {
     await (this.channel as TextChannel).send(`Night ${counter}. Now everyone shutuup.`)
