@@ -2,7 +2,8 @@ import { Game, GameState } from "./state-management";
 import { Channel, channelLink, CommandInteraction, Guild, TextChannel, User } from "discord.js";
 import { Group, Player } from "./player";
 import { randomise } from "./randomi";
-import { makeNewChannel } from "./newchannel";
+import { delay, makeNewChannel, mutePlayers, playerToUsers } from "./newchannel";
+import { werewolf } from "./string-constants";
 import { channel } from "node:diagnostics_channel";
 
 /*
@@ -39,7 +40,10 @@ export class Controller {
   createGroupPartition(): Map<Group, number> {
     var map = new Map()
     map.set(new Group(this.game_id, "Villager"), 1);
-    map.set(new Group(this.game_id, "Werewolves", true), 1);
+    const werewolves = new Group(this.game_id, "Werewolves", true);
+    werewolves.addProperties("action", "kill");
+    werewolves.addProperties("vote", true);
+    map.set(werewolves, 1);
     return map;
   }
 
@@ -74,6 +78,8 @@ export class Controller {
       .edit(user, { SendMessages: sendMessage, ViewChannel: sendMessage })
       .catch(console.error);
   }
+
+  waitingTime = 3000;
 
   /* Starts a game loop!
   Trys to start a game loop. If there's enough people, begin the game.
@@ -113,22 +119,25 @@ export class Controller {
         });
         var channel = await makeNewChannel(this.channel as TextChannel, this.guild, `${key.getProperties().get("name")}: ${this.game_id}`, true, users);
         this.groupChannels.set(key, channel);
-        (channel as TextChannel).send(`Hello ${pings}, you are all ${key.getProperties().get("name")}, here's your rubber room of rats :)`)
+        await (channel as TextChannel).send(`Hello ${pings}, you are all ${key.getProperties().get("name")}, here's your rubber room of rats :)`);
       }
     });
-
+    
+    await (this.channel as TextChannel).send(`Gaming is starting in ${this.waitingTime/1000} seconds :3`);
+    await delay(this.waitingTime); // Make this constants sometime
+    
     // commentted out temporarily so I won't send too many request to discord
-    /*
+    (this.channel as TextChannel).send("Game starting.");
+    var counter: number = 1;
     while (true){
-      this.gameLoop();
+      await this.gameLoop(counter);
       let winner = await this.getWinner();
       if (winner != null){
-        this.announceWinner(winner);
+        await this.announceWinner(winner);
         break;
       }
+      counter += 1;
     }
-    */
-
     //TODO: Tidy up and delete game channel after a short period.
   }
 
@@ -137,7 +146,8 @@ export class Controller {
   */
   async getWinner() {
     // TODO: CHANGE THOS!!!
-    return new Group(this.game_id, "gsagfdsafsadfsdafsadfasdflkjsdafhj;adsfjasdklf")
+    // return new Group(this.game_id, "gsagfdsafsadfsdafsadfasdflkjsdafhj;adsfjasdklf") 
+    return null;
   }
 
   /*
@@ -151,15 +161,30 @@ export class Controller {
   /*
   A single round of game. 
   IF there is a winning group, returns the winning group. Otherwise, return null.
+  Takes in the current round number
   */
-  public async gameLoop() {
+
+  groupTime = 10000; // 20 seconds to discuss
+  voteTime  = 10000; // 10 seconds to vote
+  dayTime   = 10000; // 1 minute to discuss in day
+
+  public async gameLoop(counter: number) {
+    await (this.channel as TextChannel).send(`Night ${counter}. Now everyone shutuup.`)
+    await mutePlayers(this.channel, this.game.getPlayerList());
     var nightResult = await this.nightCycle();
-    (this.channel as TextChannel).send(nightResult);
-    if (this.getWinner() != null) {
+    await (this.channel as TextChannel).send(nightResult);
+
+    if (await this.getWinner() != null) {
+      console.error("This can be reached");
       return;
     }
+    await (this.channel as TextChannel).send(`Day ${counter}. Now everyone yap.`);
+    await mutePlayers(this.channel, this.game.getPlayerList(), true);
+    await delay(this.dayTime - 5000);
+    await (this.channel as TextChannel).send("5 seconds left");
+    await delay(5000);
     var dayResult = await this.dayCycle();
-    (this.channel as TextChannel).send(dayResult);
+    await (this.channel as TextChannel).send(dayResult);
   }
 
   /*
@@ -167,13 +192,42 @@ export class Controller {
   Return a string as the annoucement to give at the end of the night.
   */
   public async nightCycle(): Promise<string> {
+    var a: [Group, Channel][] = Array.from(this.groupChannels);
+    var result: string[] = [];
+    await Promise.all(a.map((async (groupNChannel) => {
+      let group = groupNChannel[0];
+      let groupChannel = groupNChannel[1];
+      if (group.acts_in_night) {
+        await mutePlayers(groupChannel, group.getPlayers(), true); // unmutes the players
+         const pings = playerToUsers(group.getPlayers()).map((user) => {
+          return `<@${user.id}>`
+        });
+        await (groupChannel as TextChannel).send(`${pings} you guys can do shit now, talk.`);
+        await (delay(this.groupTime));
+        await (groupChannel as TextChannel).send(`now shut up >:(`); 
+        await mutePlayers(groupChannel, group.getPlayers()); // mutes them.
+      }
+      if (group.getProperties().get("vote") == true) {
+        switch (group.getProperties().get("action")) {
+          case "kill":    
+            // get vote result
+            // kill and mute the dead  >:)
+            result.push(` ________ was killed last night`);
+            break;
+        
+          default:
+            break;
+        }
+      }
+    })))
+   
     // Cycle through groups that acts at night.
-    return `placeholder night result`; // placeholder
+    return result.toString(); // placeholder
   }
 
   public async dayCycle(): Promise<string> {
 
-    return `placeholder day result`; // placeholder
+    return `fdsaf`; // placeholder
   }
 
   /*
