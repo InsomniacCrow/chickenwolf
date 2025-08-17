@@ -3,6 +3,7 @@ import { Channel, channelLink, CommandInteraction, Guild, TextChannel, User } fr
 import { Group, Player } from "./player";
 import { randomise } from "./randomi";
 import { makeNewChannel } from "./newchannel";
+import { channel } from "node:diagnostics_channel";
 
 /*
 The Controller
@@ -186,5 +187,14 @@ export class Controller {
 
   public getGame(): Game {
     return this.game;
+  }
+
+  public async nukeChannels() {
+    await this.channel.delete();
+    var gc = Array.from(this.groupChannels.values());
+    gc.forEach(async (channel: Channel) => {
+      await channel.delete();
+    });
+    console.log(`Nuked ${this.game_id}'s channels :)`);
   }
 }
