@@ -133,9 +133,10 @@ export class Controller {
       await this.gameLoop(counter);
       let winner = await this.getWinner();
       if (winner != null){
-        this.announceWinner(winner);
+        await this.announceWinner(winner);
         break;
       }
+      counter += 1;
     }
     //TODO: Tidy up and delete game channel after a short period.
   }
@@ -145,8 +146,8 @@ export class Controller {
   */
   async getWinner() {
     // TODO: CHANGE THOS!!!
-    return new Group(this.game_id, "gsagfdsafsadfsdafsadfasdflkjsdafhj;adsfjasdklf") 
-    // return null;
+    // return new Group(this.game_id, "gsagfdsafsadfsdafsadfasdflkjsdafhj;adsfjasdklf") 
+    return null;
   }
 
   /*
@@ -163,25 +164,27 @@ export class Controller {
   Takes in the current round number
   */
 
-  groupTime = 20000; // 20 seconds to discuss
+  groupTime = 10000; // 20 seconds to discuss
   voteTime  = 10000; // 10 seconds to vote
-  dayTime   = 60000; // 1 minute to discuss in day
+  dayTime   = 10000; // 1 minute to discuss in day
 
   public async gameLoop(counter: number) {
-    (this.channel as TextChannel).send(`Night ${counter}. Now everyone shutuup.`)
+    await (this.channel as TextChannel).send(`Night ${counter}. Now everyone shutuup.`)
     await mutePlayers(this.channel, this.game.getPlayerList());
     var nightResult = await this.nightCycle();
-    (this.channel as TextChannel).send(nightResult);
-    if (this.getWinner() != null) {
+    await (this.channel as TextChannel).send(nightResult);
+
+    if (await this.getWinner() != null) {
+      console.error("This can be reached");
       return;
     }
-    (this.channel as TextChannel).send(`Day ${counter}. Now everyone yap.`);
+    await (this.channel as TextChannel).send(`Day ${counter}. Now everyone yap.`);
     await mutePlayers(this.channel, this.game.getPlayerList(), true);
     await delay(this.dayTime - 5000);
     await (this.channel as TextChannel).send("5 seconds left");
     await delay(5000);
     var dayResult = await this.dayCycle();
-    (this.channel as TextChannel).send(dayResult);
+    await (this.channel as TextChannel).send(dayResult);
   }
 
   /*
@@ -196,8 +199,7 @@ export class Controller {
       let groupChannel = groupNChannel[1];
       if (group.acts_in_night) {
         await mutePlayers(groupChannel, group.getPlayers(), true); // unmutes the players
-        console.log("Is it stuck in a loop...")
-        const pings = playerToUsers(group.getPlayers()).map((user) => {
+         const pings = playerToUsers(group.getPlayers()).map((user) => {
           return `<@${user.id}>`
         });
         await (groupChannel as TextChannel).send(`${pings} you guys can do shit now, talk.`);
