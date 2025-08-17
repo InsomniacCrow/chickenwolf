@@ -1,4 +1,4 @@
-import { Client, CommandInteraction, Events, GatewayIntentBits, Interaction } from "discord.js";
+import { Client, CommandInteraction, Events, GatewayIntentBits, Partials, Interaction } from "discord.js";
 import { config } from "./config";
 import { commands } from "./commands";
 import { events } from "./events";
@@ -11,6 +11,10 @@ export const client = new Client({
   intents: [
     GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.DirectMessages
   ],
+  partials: [
+    Partials.Channel,
+    Partials.Message
+  ]
 });
 
 client.once(Events.ClientReady, () => {
@@ -33,11 +37,11 @@ client.on(Events.InteractionCreate, async (interaction: Interaction) => {
 
 client.on(Events.InteractionCreate, async (interaction: Interaction) => {
   try {
-    if(!interaction.isUserSelectMenu() || !interaction.channel) {
+    if (!interaction.isUserSelectMenu() || !interaction.channel) {
       return;
     }
     
-    if(interaction.customId === "test") {
+    if (interaction.customId === "test") {
       
       let message = await interaction.channel.messages.fetch(interaction.message.id);
       let value = interaction.values;

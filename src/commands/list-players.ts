@@ -1,5 +1,5 @@
 import { CommandInteraction, SlashCommandBuilder, TextChannel, User } from "discord.js";
-import { GameManagement, Game } from "../state-management";
+import { GameManagement } from "../state-management";
 import * as constants from "../string-constants";
 import { Controller } from "../controller";
 
@@ -8,16 +8,23 @@ export const data = new SlashCommandBuilder()
   .setDescription("list all players");
 
 export async function execute(interaction: CommandInteraction, state: GameManagement) {
-  var output = "";
-  const controllers: Controller[] = Array.from(state.gameControllers.values());
-  controllers.forEach((controller: Controller) => {
-    const userList: User[] = controller.getGame().getUserList();
-    output += `Game ${controller.getGame().gameID}\n`;
-    userList.forEach((user: User) => {
-      output += `\t${user.displayName}\n`;
+  if (state.controllers.length == 0) {
+    return (interaction.channel as TextChannel).send("No active game at the moment.")
+    // return interaction.followUp("No players so far, maybe use '/addself'?");
+  }
+  await interaction.reply("Current Games:")
+  for (let index = 0; index < state.controllers.length; index++) {
+    const element = state.controllers[index];
+    var userListString: string = "";
+    element.getGame().getUserList().forEach((user: User) => {
+      userListString += `${user.displayName}, `;
+      userListString += '\n';
     });
-    (interaction.channel as TextChannel).send(output);
-    output += "\n";
-  });
-  interaction.reply(output);
+    if (userListString.length == 0) {
+      interaction.followUp(`Game ${element.getGameId()} has no players`);
+      continue;
+    }
+    userListString = userListString.slice(0, -3);
+    interaction.followUp(`Players of game ${element.getGameId()}: ${userListString}`)
+  }
 }

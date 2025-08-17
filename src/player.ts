@@ -13,11 +13,11 @@ export class Group {
   public readonly acts_in_night: boolean;
 
   // By default the group acts in day
-  public constructor(game_id: string, acts_in_night: boolean = false, name: string) {
+  public constructor(game_id: string, name: string, acts_in_night: boolean = false) {
     this.game_id = game_id;
-    this.players = this.players;
+    this.players = [];
     this.properties = new Map<string, boolean | number | string>();
-    this.properties["name"] = name;
+    this.properties.set("name", name);
     this.acts_in_night = acts_in_night;
   }
 
@@ -39,7 +39,7 @@ export class Group {
 
   public addPlayer(player: Player) {
     this.players.push(player);
-    player.addToGroup(this); // links the player
+    // player.addToGroup(this); // links the player
   }
 
 }
