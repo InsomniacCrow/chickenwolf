@@ -4,6 +4,7 @@ import { Group, Player } from "./player";
 import { randomise } from "./randomi";
 import { delay, makeNewChannel, mutePlayers, playerToUsers } from "./newchannel";
 import { werewolf } from "./string-constants";
+import { channel } from "node:diagnostics_channel";
 
 /*
 The Controller
@@ -56,7 +57,7 @@ export class Controller {
 
   public async addUser(user: User) {
     try {
-      this.game.addUser(user); 
+      this.game.addUser(user);
     } catch (error) {
       throw new Error(error.message);
     }
@@ -74,7 +75,7 @@ export class Controller {
 
   async addUserToChannel(user: User, sendMessage: boolean = true) {
     (this.channel as TextChannel).permissionOverwrites
-      .edit(user, {SendMessages: sendMessage, ViewChannel: sendMessage})
+      .edit(user, { SendMessages: sendMessage, ViewChannel: sendMessage })
       .catch(console.error);
   }
 
@@ -97,7 +98,7 @@ export class Controller {
     if (this.game.getUserList().length < this.num_players) {
       (this.channel as TextChannel).send("Cannot start the game: Not enough participants.");
       return;
-    } else if (this.game.getUserList().length > this.num_players){
+    } else if (this.game.getUserList().length > this.num_players) {
       (this.channel as TextChannel).send("I don't know how you got here but you gotta kick someone, sorry bug.");
       return;
     } else {
@@ -121,6 +122,7 @@ export class Controller {
         await (channel as TextChannel).send(`Hello ${pings}, you are all ${key.getProperties().get("name")}, here's your rubber room of rats :)`);
       }
     });
+    
     await (this.channel as TextChannel).send(`Gaming is starting in ${this.waitingTime/1000} seconds :3`);
     await delay(this.waitingTime); // Make this constants sometime
     
@@ -141,7 +143,7 @@ export class Controller {
   /*
   Gets winner
   */
-  async getWinner(){
+  async getWinner() {
     // TODO: CHANGE THOS!!!
     return new Group(this.game_id, "gsagfdsafsadfsdafsadfasdflkjsdafhj;adsfjasdklf") 
     // return null;
@@ -237,5 +239,14 @@ export class Controller {
 
   public getGame(): Game {
     return this.game;
+  }
+
+  public async nukeChannels() {
+    await this.channel.delete();
+    var gc = Array.from(this.groupChannels.values());
+    gc.forEach(async (channel: Channel) => {
+      await channel.delete();
+    });
+    console.log(`Nuked ${this.game_id}'s channels :)`);
   }
 }

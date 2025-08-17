@@ -1,6 +1,7 @@
 import { CommandInteraction, CommandInteractionOptionResolver, InteractionType, SlashCommandBuilder, User } from "discord.js";
 import * as constants from "../string-constants";
 import { GameManagement } from "../state-management";
+import { Controller } from "../controller";
 
 export const data = new SlashCommandBuilder()
   .setName("addself")
@@ -10,7 +11,7 @@ export const data = new SlashCommandBuilder()
 
 export async function execute(interaction: CommandInteraction, state: GameManagement) {
   const gameID = interaction.options.getString("gameid") ?? state.activeGame?.gameID;
-  var controller;
+  var controller: Controller;
   try {
     controller = state.getControllerFromId(gameID);
   } catch (error) {
